@@ -1,6 +1,5 @@
 import java.util.*;
 
-
 public class TicTacToe {
     static ArrayList<Integer> playerMoves = new ArrayList<>();
     static ArrayList<Integer> computerMoves = new ArrayList<>();
@@ -42,7 +41,7 @@ public class TicTacToe {
                 UserFirst(input, cellPlaces, boardParts);
             }
             else {
-               firstComputerMove(boardParts, cellPlaces, input);  //first computer move
+                firstComputerMove(boardParts, cellPlaces, input);  //first computer move
             }
         }
     }
@@ -168,13 +167,13 @@ public class TicTacToe {
                 randomIndex = new Random().nextInt(cellPlaces.length);  //random index initializer
                 computerPlace = cellPlaces[randomIndex];
             }
-       }
+        }
         String mark = "O";     //computer's mark is O;
         computerMoves.add(computerPlace);       //records computers move in list
         updatePosition(boardParts, computerPlace, mark); //update the gameBoard
         for (int i = 0; i < 1; i++) {       //to make board show up after 5 seconds
             System.out.print("Loading..");
-            Thread.sleep(5000);
+            Thread.sleep(50);
             System.out.println();
         }
         String winner = winningConditions();       //check for winner each loop
@@ -195,7 +194,7 @@ public class TicTacToe {
         }
         gameBoard(boardParts);      //prints board after each move
         userMove(input, cellPlaces, boardParts);
-        }
+    }
     public static void firstComputerMove(String[][] boardParts, int[] cellPlaces, Scanner input) throws InterruptedException {
         int[] cellPlaces01 = {11, 13, 22, 31, 33};       //center and corner cells
         String mark="0";
@@ -232,269 +231,66 @@ public class TicTacToe {
         updatePosition(boardParts, computerPlace, mark); //update the gameBoard
         for(int i = 0; i<1;i++) {//to make board show up after 5 seconds
             System.out.print("Loading..");
-            Thread.sleep(5000);
+            Thread.sleep(50);
             System.out.println();
         }
         gameBoard(boardParts);
         userMove(input, cellPlaces, boardParts);
     }
+
+    // List of possible winning combinations
+    static List<int[]> winningCombinations = List.of(
+            new int[]{11, 12, 13}, new int[]{21, 22, 23}, new int[]{31, 32, 33}, // rows
+            new int[]{11, 21, 31}, new int[]{12, 22, 32}, new int[]{13, 23, 33}, // columns
+            new int[]{11, 22, 33}, new int[]{13, 22, 31}  // diagonals
+    );
+
+    // Helper method to find a winning or blocking move
+    private static int findWinningMove(List<Integer> moves, List<Integer> opponentMoves) {
+        for (int[] combination : winningCombinations) {
+            int count = 0;
+            int emptySpot = -1;
+
+            for (int position : combination) {
+                if (moves.contains(position)) count++;
+                else if (!opponentMoves.contains(position)) emptySpot = position;
+            }
+
+            if (count == 2 && emptySpot != -1) return emptySpot;
+        }
+        return -1;
+    }
+
+    // Updated smartMove method
     public static int smartMove() {
-        //for computer winning
-        //for row1
-        if(computerMoves.contains(11) && computerMoves.contains(12)){
-            if(!playerMoves.contains(13) && !computerMoves.contains(13)){
-                return 13;
+        // Check if the computer can win in the next move
+        int move = findWinningMove(computerMoves, playerMoves);
+        if (move != -1) return move;
+
+        // Check if the computer needs to block the player from winning
+        move = findWinningMove(playerMoves, computerMoves);
+        if (move != -1) return move;
+
+        // Try to take the center if it's available
+        if (!playerMoves.contains(22) && !computerMoves.contains(22)) {
+            return 22;
+        }
+
+        // Choose a corner if available
+        List<Integer> corners = List.of(11, 13, 31, 33);
+        for (int corner : corners) {
+            if (!playerMoves.contains(corner) && !computerMoves.contains(corner)) {
+                return corner;
             }
         }
-        if(computerMoves.contains(11) && computerMoves.contains(13)){
-            if(!playerMoves.contains(12) && !computerMoves.contains(12)){
-                return 12;
-            }
-        }
-        if(computerMoves.contains(13) && computerMoves.contains(12)){
-            if(!playerMoves.contains(11) && !computerMoves.contains(11)){
-                return 11;
-            }
-        }
-        //for row2
-        if(computerMoves.contains(21) && computerMoves.contains(22)){
-            if(!playerMoves.contains(23) && !computerMoves.contains(23)){
-                return 23;
-            }
-        }
-        if(computerMoves.contains(21) && computerMoves.contains(23)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(computerMoves.contains(22) && computerMoves.contains(23)){
-            if(!playerMoves.contains(21) && !computerMoves.contains(21)){
-                return 21;
-            }
-        }
-        //for row3
-        if(computerMoves.contains(31) && computerMoves.contains(32)){
-            if(!playerMoves.contains(33) && !computerMoves.contains(33)){
-                return 33;
-            }
-        }
-        if(computerMoves.contains(31) && computerMoves.contains(33)){
-            if(!playerMoves.contains(32) && !computerMoves.contains(32)){
-                return 32;
-            }
-        }
-        if(computerMoves.contains(32) && computerMoves.contains(33)){
-            if(!playerMoves.contains(31) && !computerMoves.contains(31)){
-                return 31;
-            }
-        }
-        //for col1
-        if(computerMoves.contains(11) && computerMoves.contains(21)){
-            if(!playerMoves.contains(31) && !computerMoves.contains(31)){
-                return 31;
-            }
-        }
-        if(computerMoves.contains(11) && computerMoves.contains(31)){
-            if(!playerMoves.contains(21) && !computerMoves.contains(21)){
-                return 21;
-            }
-        }
-        if(computerMoves.contains(21) && computerMoves.contains(31)){
-            if(!playerMoves.contains(11) && !computerMoves.contains(11)){
-                return 11;
-            }
-        }
-        //for col2
-        if(computerMoves.contains(12) && computerMoves.contains(22)){
-            if(!playerMoves.contains(32) && !computerMoves.contains(32)){
-                return 32;
-            }
-        }
-        if(computerMoves.contains(12) && computerMoves.contains(32)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(computerMoves.contains(22) && computerMoves.contains(32)){
-            if(!playerMoves.contains(12) && !computerMoves.contains(12)){
-                return 12;
-            }
-        }
-        //for col3
-        if(computerMoves.contains(13) && computerMoves.contains(23)){
-            if(!playerMoves.contains(33) && !computerMoves.contains(33)){
-                return 33;
-            }
-        }
-        if(computerMoves.contains(13) && computerMoves.contains(33)){
-            if(!playerMoves.contains(23) && !computerMoves.contains(23)){
-                return 23;
-            }
-        }
-        if(computerMoves.contains(23) && computerMoves.contains(33)){
-            if(!playerMoves.contains(13) && !computerMoves.contains(13)){
-                return 13;
-            }
-        }
-        //for cross1
-        if(computerMoves.contains(11) && computerMoves.contains(33)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(computerMoves.contains(11) && computerMoves.contains(22)){
-            if(!playerMoves.contains(33) && !computerMoves.contains(33)){
-                return 33;
-            }
-        }
-        if(computerMoves.contains(22) && computerMoves.contains(33)){
-            if(!playerMoves.contains(11) && !computerMoves.contains(11)){
-                return 11;
-            }
-        }
-        //for cross2
-        if(computerMoves.contains(13) && computerMoves.contains(31)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(computerMoves.contains(13) && computerMoves.contains(22)){
-            if(!playerMoves.contains(31) && !computerMoves.contains(31)){
-                return 31;
-            }
-        }
-        if(computerMoves.contains(22) && computerMoves.contains(31)){
-            if(!playerMoves.contains(13) && !computerMoves.contains(13)){
-                return 13;
-            }
-        }
-        //for blocking user
-        //for row1
-        if(playerMoves.contains(11) && playerMoves.contains(12)){
-            if(!playerMoves.contains(13) && !computerMoves.contains(13)){
-                return 13;
-            }
-        }
-        if(playerMoves.contains(11) && playerMoves.contains(13)){
-            if(!playerMoves.contains(12) && !computerMoves.contains(12)){
-                return 12;
-            }
-        }
-        if(playerMoves.contains(12) && playerMoves.contains(13)){
-            if(!playerMoves.contains(11) && !computerMoves.contains(11)){
-                return 11;
-            }
-        }
-        //for row2
-        if(playerMoves.contains(21) && playerMoves.contains(22)){
-            if(!playerMoves.contains(23) && !computerMoves.contains(23)){
-                return 23;
-            }
-        }
-        if(playerMoves.contains(21) && playerMoves.contains(23)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(playerMoves.contains(22) && playerMoves.contains(23)){
-            if(!playerMoves.contains(21) && !computerMoves.contains(21)){
-                return 21;
-            }
-        }
-        //for row3
-        if(playerMoves.contains(31) && playerMoves.contains(32)){
-            if(!playerMoves.contains(33) && !computerMoves.contains(33)){
-                return 33;
-            }
-        }
-        if(playerMoves.contains(31) && playerMoves.contains(33)){
-            if(!playerMoves.contains(32) && !computerMoves.contains(32)){
-                return 32;
-            }
-        }
-        if(playerMoves.contains(32) && playerMoves.contains(33)){
-            if(!playerMoves.contains(31) && !computerMoves.contains(31)){
-                return 31;
-            }
-        }
-        //for col1
-        if(playerMoves.contains(11) && playerMoves.contains(21)){
-            if(!playerMoves.contains(31) && !computerMoves.contains(31)){
-                return 31;
-            }
-        }
-        if(playerMoves.contains(11) && playerMoves.contains(31)){
-            if(!playerMoves.contains(21) && !computerMoves.contains(21)){
-                return 21;
-            }
-        }
-        if(playerMoves.contains(21) && playerMoves.contains(31)){
-            if(!playerMoves.contains(11) && !computerMoves.contains(11)){
-                return 11;
-            }
-        }
-        //for col2
-        if(playerMoves.contains(12) && playerMoves.contains(22)){
-            if(!playerMoves.contains(32) && !computerMoves.contains(32)){
-                return 32;
-            }
-        }
-        if(playerMoves.contains(12) && playerMoves.contains(32)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(playerMoves.contains(22) && playerMoves.contains(32)){
-            if(!playerMoves.contains(12) && !computerMoves.contains(12)){
-                return 12;
-            }
-        }
-        //for col3
-        if(playerMoves.contains(13) && playerMoves.contains(23)){
-            if(!playerMoves.contains(33) && !computerMoves.contains(33)){
-                return 33;
-            }
-        }
-        if(playerMoves.contains(13) && playerMoves.contains(33)){
-            if(!playerMoves.contains(23) && !computerMoves.contains(23)){
-                return 23;
-            }
-        }
-        if(playerMoves.contains(23) && playerMoves.contains(33)){
-            if(!playerMoves.contains(13) && !computerMoves.contains(13)){
-                return 13;
-            }
-        }
-        //for cross1
-        if(playerMoves.contains(11) && playerMoves.contains(33)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(playerMoves.contains(11) && playerMoves.contains(22)){
-            if(!playerMoves.contains(33) && !computerMoves.contains(33)){
-                return 33;
-            }
-        }
-        if(playerMoves.contains(22) && playerMoves.contains(33)){
-            if(!playerMoves.contains(11) && !computerMoves.contains(11)){
-                return 11;
-            }
-        }
-        //for cross2
-        if(playerMoves.contains(13) && playerMoves.contains(31)){
-            if(!playerMoves.contains(22) && !computerMoves.contains(22)){
-                return 22;
-            }
-        }
-        if(playerMoves.contains(13) && playerMoves.contains(22)){
-            if(!playerMoves.contains(31) && !computerMoves.contains(31)){
-                return 31;
-            }
-        }
-        if(playerMoves.contains(22) && playerMoves.contains(31)){
-            if(!playerMoves.contains(13) && !computerMoves.contains(13)){
-                return 13;
+
+        // Fallback to any open space (first empty spot)
+        for (int i = 1; i <= 3; i++) {
+            for (int j = 1; j <= 3; j++) {
+                int pos = i * 10 + j;
+                if (!playerMoves.contains(pos) && !computerMoves.contains(pos)) {
+                    return pos;
+                }
             }
         }
         return -1;
